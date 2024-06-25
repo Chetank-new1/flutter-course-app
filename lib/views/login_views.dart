@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:notesflutter/firebase_options.dart';
+// import 'package:notesflutter/firebase_options.dart';
 import 'package:notesflutter/material/dialog_utils.dart';
 
 class LoginVIew extends StatefulWidget {
@@ -38,79 +38,72 @@ class _LoginVIewState extends State<LoginVIew> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LOG IN'),
-        // backgroundColor: Colors.blue, this thing prints the colour and makes it permanent on that place
+        title: const Text('Login View'),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
-        centerTitle: true,
+        shadowColor: Colors.black87,
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration:
-                        const InputDecoration(hintText: 'Enter your email'),
-                  ),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration:
-                        const InputDecoration(hintText: 'Enter your password'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      try {
-                        final userCredential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: email, password: password);
-                        print(userCredential);
-                      } on FirebaseAuthException catch (e) {
-                        print(
-                            'FirebaseAuthException: ${e.code} - ${e.message}');
-                        switch (e.code) {
-                          case 'invalid-email':
-                          case 'wrong-password':
-                          case 'user-not-found':
-                          case 'user-disabled':
-                            showErrDialog(context, e.code);
-                            break;
-                          default:
-                            // Log any other unexpected errors
-                            print('Unexpected error occurred: ${e.code}');
-                            break;
-                        }
-                      } catch (e) {
-                        print('Unexpected error occurred: $e');
-                      }
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: 'Enter your email'),
+          ),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: 'Enter your password'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
+              try {
+                final userCredential = await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                        email: email, password: password);
+                print(userCredential);
+              } on FirebaseAuthException catch (e) {
+                print('FirebaseAuthException: ${e.code} - ${e.message}');
+                switch (e.code) {
+                  case 'invalid-email':
+                  case 'wrong-password':
+                  case 'user-not-found':
+                  case 'user-disabled':
+                    showErrDialog(context, e.code);
+                    break;
+                  default:
+                    // Log any other unexpected errors
+                    print('Unexpected error occurred: ${e.code}');
+                    break;
+                }
+              } catch (e) {
+                print('Unexpected error occurred: $e');
+              }
 
-                      // catch (e) {
-                      //   print('Somethingbad happened');
-                      //   print(e.runtimeType);
-                      //   print(e);
-                      // }
-                    },
-                    child: const Text('Login'),
-                  ),
-                ],
+              // catch (e) {
+              //   print('Somethingbad happened');
+              //   print(e.runtimeType);
+              //   print(e);
+              // }
+            },
+            child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/register/',
+                (route) => false,
               );
-            default:
-              return const Text('Loading...');
-          }
-        },
+            },
+            child: const Text('Not Registered yet? Register here!'),
+          )
+        ],
       ),
     );
   }

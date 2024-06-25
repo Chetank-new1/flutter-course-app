@@ -1,0 +1,342 @@
+lognview before column return
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:notesflutter/firebase_options.dart';
+import 'package:notesflutter/material/dialog_utils.dart';
+
+class LoginVIew extends StatefulWidget {
+  const LoginVIew({super.key});
+
+  @override
+  State<LoginVIew> createState() => _LoginVIewState();
+}
+
+class _LoginVIewState extends State<LoginVIew> {
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _email = TextEditingController();
+    _password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // return const Placeholder();
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('LOG IN'),
+        // backgroundColor: Colors.blue, this thing prints the colour and makes it permanent on that place
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return Column(
+                children: [
+                  TextField(
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration:
+                        const InputDecoration(hintText: 'Enter your email'),
+                  ),
+                  TextField(
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration:
+                        const InputDecoration(hintText: 'Enter your password'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final email = _email.text;
+                      final password = _password.text;
+                      try {
+                        final userCredential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: email, password: password);
+                        print(userCredential);
+                      } on FirebaseAuthException catch (e) {
+                        print(
+                            'FirebaseAuthException: ${e.code} - ${e.message}');
+                        switch (e.code) {
+                          case 'invalid-email':
+                          case 'wrong-password':
+                          case 'user-not-found':
+                          case 'user-disabled':
+                            showErrDialog(context, e.code);
+                            break;
+                          default:
+                            // Log any other unexpected errors
+                            print('Unexpected error occurred: ${e.code}');
+                            break;
+                        }
+                      } catch (e) {
+                        print('Unexpected error occurred: $e');
+                      }
+
+                      // catch (e) {
+                      //   print('Somethingbad happened');
+                      //   print(e.runtimeType);
+                      //   print(e);
+                      // }
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
+              );
+            default:
+              return const Text('Loading...');
+          }
+        },
+      ),
+    );
+  }
+}
+
+
+register view before column return
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:notesflutter/firebase_options.dart';
+import 'package:notesflutter/material/dialog_utils.dart';
+
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
+
+  @override
+  State<RegisterView> createState() => _RegisterViewState();
+}
+
+class _RegisterViewState extends State<RegisterView> {
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _email = TextEditingController();
+    _password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // return const Placeholder();
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('REGISTER'),
+        // backgroundColor: Colors.blue, this thing prints the colour and makes it permanent on that place
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return Column(
+                children: [
+                  TextField(
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration:
+                        const InputDecoration(hintText: 'Enter your email'),
+                  ),
+                  TextField(
+                    controller: _password,
+                    // keyboardType: TextInputType.visiblePassword,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration:
+                        const InputDecoration(hintText: 'Enter your password'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final email = _email.text;
+                      final password = _password.text;
+                      try {
+                        final userCredential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                                email: email, password: password);
+                        print(userCredential);
+                      } on FirebaseAuthException catch (e) {
+                        print(
+                            'FirebaseAuthException: ${e.code} - ${e.message}');
+                        {
+                          switch (e.code) {
+                            case 'weak-password':
+                            case 'email-already-in-use':
+                            case 'invalid-email':
+                              // if (context.mounted) {
+                                showErrDialog(context, e.code);
+                              // }
+                              break;
+                            default:
+                              print(e.code);
+                              break;
+                          }
+                        }
+                      }
+                    },
+                    child: const Text('Regsiter'),
+                  ),
+                ],
+              );
+            default:
+              return const Text('Loading...');
+          }
+        },
+      ),
+    );
+  }
+}
+
+
+main.dart is below
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notesflutter/firebase_options.dart';
+// import 'package:notesflutter/material/dialog_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:notesflutter/views/login_views.dart';
+import 'package:notesflutter/views/register_views.dart';
+// import 'views/register_views.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 208, 8, 235)),
+        useMaterial3: true,
+      ),
+      home: const HomePage(),
+    ),
+  );
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // return const Placeholder();
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('HOME PAGE'),
+        // backgroundColor: Colors.blue, this thing prints the colour and makes it permanent on that place
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              final user = FirebaseAuth.instance.currentUser;
+              if (user?.emailVerified ?? false) {
+                print('connection done.');
+              } else {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const VerifyEmailView(),
+                    ),
+                  );
+                });
+              }
+              return const Text('Done');
+            default:
+              return const Text('Loading...');
+          }
+        },
+      ),
+    );
+  }
+}
+
+class VerifyEmailView extends StatefulWidget {
+  const VerifyEmailView({super.key});
+
+  @override
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
+
+class _VerifyEmailViewState extends State<VerifyEmailView> {
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Verify email'),
+          backgroundColor: theme.colorScheme.primary,
+          foregroundColor: Colors.white,
+        ),
+        body: Column(
+          children: [
+            const Text('Please verify your email'),
+            ElevatedButton(
+              onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                await user?.sendEmailVerification();
+              },
+              child: const Text('Send email verification'),
+            )
+          ],
+        ));
+  }
+}
