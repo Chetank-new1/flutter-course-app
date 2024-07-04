@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:notesflutter/firebase_options.dart';
 import 'package:notesflutter/material/dialog_utils.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginVIew extends StatefulWidget {
   const LoginVIew({super.key});
@@ -41,7 +42,7 @@ class _LoginVIewState extends State<LoginVIew> {
         title: const Text('Login View'),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
-        shadowColor: Colors.black87,
+        shadowColor: const Color.fromARGB(221, 245, 3, 3),
       ),
       body: Column(
         children: [
@@ -64,12 +65,21 @@ class _LoginVIewState extends State<LoginVIew> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                        email: email, password: password);
-                print(userCredential);
+                // final userCredential =
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+                // devtools.log(userCredential.toString());
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/notesview/',
+                  (route) => false,
+                );
               } on FirebaseAuthException catch (e) {
-                print('FirebaseAuthException: ${e.code} - ${e.message}');
+                var errorCode = e.code;
+                var errorMessage = e.message;
+                devtools
+                    .log('FirebaseAuthException: $errorCode - $errorMessage');
                 switch (e.code) {
                   case 'invalid-email':
                   case 'wrong-password':
@@ -79,11 +89,11 @@ class _LoginVIewState extends State<LoginVIew> {
                     break;
                   default:
                     // Log any other unexpected errors
-                    print('Unexpected error occurred: ${e.code}');
+                    devtools.log('Unexpected error occurred: ${e.code}');
                     break;
                 }
               } catch (e) {
-                print('Unexpected error occurred: $e');
+                devtools.log('Unexpected error occurred: $e');
               }
 
               // catch (e) {
