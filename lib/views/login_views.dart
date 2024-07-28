@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notesflutter/constants/routes.dart';
 // import 'package:notesflutter/firebase_options.dart';
-import 'package:notesflutter/material/dialog_utils.dart';
-import 'dart:developer' as devtools show log;
+// import 'package:notesflutter/material/dialog_utils.dart';
+// import 'dart:developer' as devtools show log;
+
+import 'package:notesflutter/utility/showerrordialogue.dart';
 
 class LoginVIew extends StatefulWidget {
   const LoginVIew({super.key});
@@ -77,24 +79,31 @@ class _LoginVIewState extends State<LoginVIew> {
                   (route) => false,
                 );
               } on FirebaseAuthException catch (e) {
-                var errorCode = e.code;
-                var errorMessage = e.message;
-                devtools
-                    .log('FirebaseAuthException: $errorCode - $errorMessage');
+                // var errorCode = e.code;
+                // var errorMessage = e.message;
+                // devtools.log('FirebaseAuthException: $e');
                 switch (e.code) {
                   case 'invalid-email':
                   case 'wrong-password':
                   case 'user-not-found':
                   case 'user-disabled':
-                    showErrDialog(context, e.code);
+                    await showErrorDialogue(
+                      context,
+                      e.code,
+                    );
                     break;
                   default:
                     // Log any other unexpected errors
-                    devtools.log('Unexpected error occurred: ${e.code}');
+                    showErrorDialogue(
+                      context,
+                      'Something wrong happened',
+                    );
+                    // devtools.log('Unexpected error occurred: ${e.code}');
                     break;
                 }
               } catch (e) {
-                devtools.log('Unexpected error occurred: $e');
+                showErrorDialogue(context, e.toString());
+                // devtools.log('Unexpected error occurred: $e');
               }
 
               // catch (e) {

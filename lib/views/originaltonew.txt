@@ -340,3 +340,25 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
         ));
   }
 }
+
+
+my own customerr dialogue
+
+var errorCode = e.code;
+var errorMessage = e.message;
+devtools.log('FirebaseAuthException: $errorCode - $errorMessage');
+switch (e.code) {
+  case 'invalid-email':
+  case 'wrong-password':
+  case 'user-not-found':
+  case 'user-disabled':
+    showErrorDialogue(context, e.code);
+    break;
+  default:
+    // Log any other unexpected errors
+    devtools.log('Unexpected error occurred: ${e.code}');
+    break;
+  }
+} catch (e) {
+  devtools.log('Unexpected error occurred: $e');
+}
