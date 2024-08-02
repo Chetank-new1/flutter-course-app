@@ -94,7 +94,7 @@ class _LoginVIewState extends State<LoginVIew> {
                     break;
                   default:
                     // Log any other unexpected errors
-                    showErrorDialogue(
+                    await showErrorDialogue(
                       context,
                       'Something wrong happened',
                     );
@@ -102,7 +102,7 @@ class _LoginVIewState extends State<LoginVIew> {
                     break;
                 }
               } catch (e) {
-                showErrorDialogue(context, e.toString());
+                await showErrorDialogue(context, e.toString());
                 // devtools.log('Unexpected error occurred: $e');
               }
 
